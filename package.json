@@ -1,0 +1,21 @@
+{
+  "name": "jobs_road_back",
+  "version": "1.0.0",
+  "description": "(Backend of job site whit the name Jobs Road)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "jobs",
+    "search",
+    "vacancy"
+  ],
+  "author": "George_Valle_Dev",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "passport": "^0.7.0"
+  }
+}
