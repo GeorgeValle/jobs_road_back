@@ -23,11 +23,16 @@ const candidateSchema = new Schema({
         type: String,
         default: "",
     },
-    
-
-},
-
-
-    {timestamps: true})
+    experience: [{ type: Schema.Types.ObjectId, ref: 'experience' }],
+    education: [{ type: Schema.Types.ObjectId, ref: 'education' }],
+    skills:{
+        type: Array,
+        of: {type : String ,default:[]}
+    },
+    tecnologies:{
+        type:Array,
+        of: {type: String, default:[]}
+    }
+})
 
 export default  model('user', candidateSchema);
