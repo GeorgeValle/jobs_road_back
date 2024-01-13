@@ -1,25 +1,20 @@
 import {Schema,model} from 'mongoose';
 
-const experienceSchema = new Schema({
-    jobTitle:{
+
+const educationSchema = new Schema({
+    educationTitle:{
         type: String,
         required: true
     },
-    companyName: {
+    institution: {
         type: String,
         required: true
     },
-    branch: { 
-            type: String,
-            required: true,
-        },
-    location:{
+    degree: {
         type: String,
         required: true
     },
-    tasks:{
-        type:String
-    },
+    // 
     startMonth: {
         type: Number,
         min: 1,
@@ -39,8 +34,18 @@ const experienceSchema = new Schema({
         type: Number,
         min: 1900,
         max: new Date().getFullYear()
-     }
-    
-})
+     },
+    status:{
+        type: String,
+        require: true,
+        enum: ['In Progress', 'Completed', 'Abandoned'],
+    },
+    description: {
+        type: String,
+        required: true
+    },
+    candidate:{ type: Schema.Types.ObjectId, ref: 'experience' }
 
-export default  model('user', experienceSchema);
+});
+
+export default  model('education', educationSchema);

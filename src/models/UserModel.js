@@ -56,15 +56,11 @@ const userSchema = new Schema({
         type: Boolean,
         default: false
     },
-    admin:{
-        type:Boolean,
-        default:false
+    role:{
+        type:String,
+        default:'Normal',
+        enum: ['Normal', 'Recuiter', 'Admin']
     },
-    recruiter:{
-        type:Boolean,
-        default:false
-    },
-
 
 },
 
