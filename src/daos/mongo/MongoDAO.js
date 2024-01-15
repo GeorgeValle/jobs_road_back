@@ -1,4 +1,4 @@
-// This Class have patrons of methodes encapsulated for mongo
+// This Class have patterns of encapsulated methodes for mongo
 class MongoDAO{
     constructor(options){
         this.collection= options
@@ -82,12 +82,6 @@ updateOneFieldById = async (id, fieldUpdate,)=>{
         );
         console.log(updatedResult);
 
-        // example ObjFind= {name: 'Jean-Luc Picard'}
-        //let doc = await this.collection.findOne({ name: 'Jean-Luc Picard' });
-
-        //doc.age = update.age;
-        //await doc.save();
-
 
     }catch (err) {
 
@@ -147,8 +141,6 @@ resetAllDAO = async (fieldsUpdated) => {
 
     }
 }
-
-
 
 }
 export {MongoDAO}
