@@ -7,5 +7,7 @@ export default {
     PORT: process.env.PORT || 8080,
     MODE_ENVIROMENT: process.env.MODE_ENVIROMENT,
     JWT_SECRET: process.env.JWT_SECRET,
-    PERSISTENCE: process.env.PERSISTENCE
+    PERSISTENCE: process.env.PERSISTENCE,
+    USER_MAIL: process.env.USER,
+    PASS_MAIL: process.env.PASS
 }

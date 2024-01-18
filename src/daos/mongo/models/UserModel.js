@@ -1,17 +1,18 @@
 import {Schema,model} from 'mongoose';
 
 const userSchema = new Schema({
-    username: { 
+    email: {
         type: String,
-        unique: true,
         lowercase: true,
-        required: [true, "can't be blank"],
-        match: [/\S+@\S+\.\S+/, 'is invalid'],
-        index:true,
         trim: true,
-        required: true
+        index:true,
+        unique:true,
+        validate: {
+        validator: function(value) {
+            return /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(value);
+            },
+            message: 'Invalid email format'}
     },
-
     password: { 
             type: String,
             // match: [/^[a-zA-Z0-9]+$/, 'is invalid'],
@@ -25,7 +26,6 @@ const userSchema = new Schema({
                   return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{7,15}$/.test(value);
                 },
                 message: 'Invalid password format',}
-            
         },
 
     name:{
@@ -37,18 +37,6 @@ const userSchema = new Schema({
         type:String,
         required: true
         },
-    
-    email: {
-        type: String,
-        lowercase: true,
-        trim: true,
-        unique:true,
-        validate: {
-        validator: function(value) {
-            return /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(value);
-            },
-            message: 'Invalid email format'}
-    },
     lastLogin:{
         type:Date
     },
@@ -61,7 +49,7 @@ const userSchema = new Schema({
         default:'Normal',
         enum: ['Normal', 'Recuiter', 'Admin']
     },
-
+    candidate:{ type: Schema.Types.ObjectId, ref: 'candidate' }
 },
 
 

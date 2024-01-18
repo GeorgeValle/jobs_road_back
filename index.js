@@ -5,6 +5,8 @@ dotenv.config();
 //Config server Express
 import express from 'express';
 
+import sessionRouter from "./src/routes/SessionRouter.js"
+
 //import of passport
 import passport from 'passport';
 
@@ -48,7 +50,14 @@ if (modoCluster && cluster.isPrimary) {
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
+
+    initializatePassport();
+    app.use(passport.initialize());
+    app.use(passport.session());
+    app.use(cookieParser("keyCookieForJWT"));
+
     //routes
+    app.use("/api/session", sessionRouter);
     //app.use('/teams',teamRouter);
 
 
