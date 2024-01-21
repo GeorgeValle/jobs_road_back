@@ -9,5 +9,6 @@ export default {
     JWT_SECRET: process.env.JWT_SECRET,
     PERSISTENCE: process.env.PERSISTENCE,
     USER_MAIL: process.env.USER,
-    PASS_MAIL: process.env.PASS
+    PASS_MAIL: process.env.PASS,
+    EMAIL_ADMIN: process.env.EMAIL_ADMIN
 }

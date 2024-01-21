@@ -1,5 +1,5 @@
 import UserDTO from "../DTO/user.dto.js";
-
+import CustomError from "../utils/CustomError.js";
 import { generateUserErrorInfo } from "../errors/info.js";
 import nodemailer from "nodemailer";
 import config from "../config/config.js";
@@ -50,8 +50,8 @@ export default class UserRepository {
         verificationCode
       );
       return new UserDTO(user);
-    } catch (e) {
-      throw e;
+    } catch (error) {
+      throw error;
     }
   }
 

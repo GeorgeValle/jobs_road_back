@@ -1,6 +1,7 @@
 import { createHash, isValidPassword } from "../utils.js";
 import UserDTO from "../DTO/user.dto.js";
 //errors
+import CustomError from "../utils/CustomError.js"
 import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
 import config from "../config/Envs.js";
@@ -67,7 +68,7 @@ export default class SessionRepository {
       html: `Haz click en el siguiente link para verificar tu correo electrónico: ${verificationLink}`,
     };
     user.password = createHash(user.password);
-    if (user.email === "jorgeguillermovalle@gmail.com") {
+    if (user.email === Envs.EMAIL_ADMIN) {
       user.rol = "admin";
     } else {
       user.rol = "normal";

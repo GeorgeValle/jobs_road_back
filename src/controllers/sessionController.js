@@ -1,13 +1,14 @@
 import { sessionRepository } from "../services/index.js";
 import { generateToken } from "../utils/MethodesJWT.js";
 import jwt from "jsonwebtoken";
+import {logInfo, errorLogger} from '../utils/Logger.js'
 
 
 export const loginUser = async (req, res) => {
   try {
     const user = await sessionRepository.loginUser(req.body);
     if (user == null) {
-      req.logger.error("Error al loguear el usuario");
+      errorLogger.error("Error to logging session");
       return res.redirect("/login");
     }
     const access_token = generateToken(user);
@@ -18,7 +19,7 @@ export const loginUser = async (req, res) => {
       })
       .render("profile", user);
   } catch (error) {
-    req.logger.fatal("Error al loguear el usuario");
+    errorLogger.fatal("Error to logging session");
     const message = {
       message: error,
     };
@@ -32,7 +33,7 @@ export const loginUser = async (req, res) => {
 export const registerUser = async (req, res) => {
   try {
     const user = await sessionRepository.registerUser(req.body);
-    req.logger.info("Usuario registrado");
+    logInfo.info("User Registered");
     const message = {
       message:
         "Se enviaron las instrucciones al mail para poder activar tu cuenta.De lo contrario no podras iniciar session",
@@ -42,7 +43,7 @@ export const registerUser = async (req, res) => {
     };
     res.status(500).render("popUp", { message, URI });
   } catch (error) {
-    req.logger.fatal("Error al registrar el usuario");
+    errorLogger.fatal("Error to register user");
     const message = {
       message: error,
     };
@@ -56,10 +57,10 @@ export const registerUser = async (req, res) => {
 export const getUserCurrent = async (req, res) => {
   try {
     const user = await sessionRepository.getUserCurrent(req.user.user);
-    req.logger.info("Usuario obtenido");
+    logInfo.info("User obtained");
     return res.send({ status: "success", payload: user });
   } catch (error) {
-    req.logger.fatal("Error al obtener el usuario");
+    req.logger.fatal("Error to obtain user");
     const message = {
       message: error,
     };
@@ -75,14 +76,14 @@ export const verificarUser = async (req, res) => {
     const token = req.params.token;
     jwt.verify(token, "secret", async (err, decoded) => {
       if (err) {
-        req.logger.fatal("Token de verificacion no válido");
+        errorLogger.fatal("Token de verificacion no válido");
         res.status(500).json({ message: "Token de verificacion no válido" });
       }
       await sessionRepository.verificarUser(decoded);
       res.render("verificar", {});
     });
   } catch (error) {
-    req.logger.fatal("Error al verificar el usuario");
+    errorLogger.fatal("Error to verify user");
     const message = {
       message: error,
     };
@@ -97,7 +98,7 @@ export const resetearPassword = async (req, res) => {
   try {
     res.render("resetearPassword", {});
   } catch (error) {
-    req.logger.fatal("Error al resetear la contraseña");
+    errorLogger.fatal("Error to reset password");
     const message = {
       message: error,
     };
@@ -124,7 +125,7 @@ export const resetPasswordForm = async (req, res) => {
   const token = req.params.token;
   jwt.verify(token, "secret", async (err, decoded) => {
     if (err) {
-      req.logger.fatal("Token de verificacion no válido");
+      errorLogger.fatal("errorLogger");
       const message = {
         message: err,
       };
@@ -151,7 +152,7 @@ export const validPassword = async (req, res) => {
     };
     res.status(200).render("popUp", { message, URI });
   } catch (error) {
-    req.logger.fatal("Error al validar la contraseña");
+    errorLogger.fatal("Error to validate password");
     const message = {
       message: error,
     };
