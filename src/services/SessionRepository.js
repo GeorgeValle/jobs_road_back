@@ -1,5 +1,5 @@
-import { createHash, isValidPassword } from "../utils.js";
-import UserDTO from "../DTO/user.dto.js";
+import { createHash, isValidPassword } from "../utils/MethodesJWT.js";
+import UserDTO from "../dto/UserDTO.js";
 //errors
 import CustomError from "../utils/CustomError.js"
 import nodemailer from "nodemailer";
@@ -9,8 +9,8 @@ import config from "../config/Envs.js";
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: Envs.USER_MAIL,
-    pass: Envs.PASS_MAIL,
+    user: config.USER_MAIL,
+    pass: config.PASS_MAIL,
   },
 });
 
@@ -58,21 +58,26 @@ export default class SessionRepository {
     if (await this.userDAO.getByFieldDAO(user.email))
       throw new Error("User already exist");
     const token = jwt.sign({ email: user.email }, "secret", {
-      expiresIn: "24h",
+      expiresIn: "72h",
     });
-    const verificationLink = `${config.session}/verify/${token}`;
+    const verificationLink = `${config.SESSION}/verify/${token}`;
     const mailOptions = {
-      from: config.USER,
+      from: config.USER_MAIL,
       to: user.email,
-      subject: "Verificación de tu correo electrónico",
-      html: `Haz click en el siguiente link para verificar tu correo electrónico: ${verificationLink}`,
+      subject: "Verify your email",
+      html: `Click on the following link to verify your email: ${verificationLink}`,
     };
     user.password = createHash(user.password);
-    if (user.email === Envs.EMAIL_ADMIN) {
-      user.rol = "admin";
+    if (user.email === config.EMAIL_ADMIN) {
+      user.role = "Admin";
     } else {
-      user.rol = "normal";
+      user.role = "Normal";
     }
+
+    if (!user.name)throw new Error("User name missing");
+
+    if (!user.surname)throw new Error("User surname missing");
+
     transporter.sendMail(mailOptions, (err, info) => {
       if (err) throw new Error(err);
     });
@@ -83,7 +88,7 @@ export default class SessionRepository {
     return new UserDTO(user);
   }
 
-  async verificarUser(decoded) {
+  async verifyUser(decoded) {
     const user = await this.userDAO.getByFieldDAO(decoded.email);
     user.status = "verified";
     await this.userDAO.updateUser(user._id, user);
@@ -102,7 +107,7 @@ export default class SessionRepository {
     if (password !== confirmPassword) {
       return CustomError.createError({
         name: "Error",
-        message: "Las contraseñas no coinciden",
+        message: "Passwords do not match",
         code: EErrors.PASSWORD_NOT_VALID,
         info: generateUserErrorInfo(user),
       });
@@ -110,7 +115,7 @@ export default class SessionRepository {
     if (isValidPassword(user, password)) {
       return CustomError.createError({
         name: "Error",
-        message: "La contraseña ingresada no puede ser igual a la anterior",
+        message: "The password entered cannot be the same as the previous one",
         code: EErrors.PASSWORD_NOT_VALID,
         info: generateUserErrorInfo(user),
       });
@@ -126,13 +131,13 @@ export default class SessionRepository {
     if (user) {
       const token = jwt.sign({ email }, "secret", { expiresIn: "1h" });
       const mailOptions = {
-        from: config.USER,
+        from: config.USER_MAIL,
         to: email,
-        subject: "Restablecer tu contraseña",
-        html: `Haz click en el siguiente link para restablecer tu contraseña: ${config.session}/resetPasswordForm/${token}`,
+        subject: "Restore Password",
+        html: `Click on the following link to reset your password: ${config.SESSION}/resetPasswordForm/${token}`,
       };
       transporter.sendMail(mailOptions, (err, info) => {
-        if (err) throw new Error("Error al enviar el mail");
+        if (err) throw new Error("Error to send email");
       });
     }
     return user;

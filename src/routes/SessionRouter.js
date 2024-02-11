@@ -3,8 +3,8 @@ import {
   loginUser,
   registerUser,
   getUserCurrent,
-  verificarUser,
-  resetearPassword,
+  verifyUser,
+  resetPassword,
   resetPasswordForm,
   restart,
   validPassword,
@@ -34,7 +34,7 @@ router.get(
   getProfile
 );
 
-router.get("/verify/:token", verificarUser);
+router.get("/verify/:token", verifyUser);
 
 router.get(
   "/current",
@@ -42,7 +42,7 @@ router.get(
   getUserCurrent
 );
 
-router.get("/resetPassword", resetearPassword);
+router.get("/resetPassword", resetPassword);
 
 router.post("/restart", restart);
 

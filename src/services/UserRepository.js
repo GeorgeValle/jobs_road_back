@@ -1,8 +1,8 @@
-import UserDTO from "../DTO/user.dto.js";
+import UserDTO from "../dto/UserDTO.js";
 import CustomError from "../utils/CustomError.js";
-import { generateUserErrorInfo } from "../errors/info.js";
+import { generateUserErrorInfo } from "../utils/info.js";
 import nodemailer from "nodemailer";
-import config from "../config/config.js";
+import Envs from "../config/Envs.js";
 
 export default class UserRepository {
   constructor(userDAO, cartDAO, ticketDAO) {
@@ -73,22 +73,12 @@ export default class UserRepository {
     }
   }
 
-  addCartToUser = async (userId, cartId) => {
-    try {
-      const user = await this.userDAO.getUserById(userId);
-      user.cart.push(cartId);
-      user.save();
-      return user;
-    } catch (e) {
-      throw e;
-    }
-  };
 
   userPremium = async (id) => {
     try {
       const user = await this.userDAO.getUserById(id);
       if (user) {
-        if (user.rol === "admin") {
+        if (user.role === "admin") {
           CustomError.createError({
             message: "No authorized",
             code: EErrors.USER_NOT_AUTHORIZED,
@@ -136,62 +126,7 @@ export default class UserRepository {
     }
   };
 
-  uploadDocuments = async(id,files)=>{
-    try{
-      const userDB = await this.userDAO.getUserById(id);
-      if (!userDB) {
-        return res.status(404).json({ error: "User not found" });
-      }
-      const uploadedDocuments = [];
   
-      if (files["profileImage"]) {
-        const profileImage = files["profileImage"][0];
-        uploadedDocuments.push({
-          name: profileImage.originalname,
-          reference: profileImage.path,
-        });
-      }
-  
-      if (files["productImage"]) {
-        const productImage = files["productImage"][0];
-        uploadedDocuments.push({
-          name: productImage.originalname,
-          reference: productImage.path,
-        });
-      }
-  
-      if (files["documentDNI"]) {
-        const documentDNI = files["documentDNI"][0];
-        uploadedDocuments.push({
-          name: documentDNI.originalname,
-          reference: documentDNI.path,
-        });
-      }
-  
-      if (files["comprobanteDomicilio"]) {
-        const comprobanteDomicilio = files["comprobanteDomicilio"][0];
-        uploadedDocuments.push({
-          name: comprobanteDomicilio.originalname,
-          reference: comprobanteDomicilio.path,
-        });
-      }
-  
-      if (files["comprobanteEstadoCuenta"]) {
-        const comprobanteEstadoCuenta = files["comprobanteEstadoCuenta"][0];
-        uploadedDocuments.push({
-          name: comprobanteEstadoCuenta.originalname,
-          reference: comprobanteEstadoCuenta.path,
-        });
-      }
-  
-      userDB.documents.push(...uploadedDocuments);
-  
-      await this.userDAO.updateUser(userDB._id, userDB);
-      return userDB;
-    }catch(e){
-      throw e;
-    }
-  }
 
   inactiveUsersDrop = async () => {
     try {
@@ -199,8 +134,8 @@ export default class UserRepository {
       const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-          user: config.USER,
-          pass: config.PASS,
+          user: Envs.USER,
+          pass: Envs.PASS,
         },
       });
 
@@ -228,20 +163,5 @@ export default class UserRepository {
       throw e;
     }
   };
-  getTicketUserById = async (userID) => {
-    try {
-      const user = await this.userDAO.getUserById(userID);
-      let tickets = [];
-      for (const ticketId of user.ticketId) {
-        const ticket = await this.ticketDAO.getTicketById(ticketId._id);
-        if (ticket.status === "confirmate") {
-          tickets.push(ticket);
-        }
-      }
-      if (tickets.length > 0) return tickets;
-      throw e;
-    } catch (e) {
-      throw e;
-    }
-  };
+  
 }

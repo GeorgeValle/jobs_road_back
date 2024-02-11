@@ -2,31 +2,36 @@ import { sessionRepository } from "../services/index.js";
 import { generateToken } from "../utils/MethodesJWT.js";
 import jwt from "jsonwebtoken";
 import {logInfo, errorLogger} from '../utils/Logger.js'
+import ProfileDTO from "../dto/ProfileDTO.js";
 
 
 export const loginUser = async (req, res) => {
   try {
     const user = await sessionRepository.loginUser(req.body);
     if (user == null) {
-      errorLogger.error("Error to logging session");
+      errorLogger.error("Failed to login");
       return res.redirect("/login");
     }
     const access_token = generateToken(user);
+    logInfo.info(`${user.username} logged in`);
+    const data = new ProfileDTO(user);
     res
-      .cookie("keyCookieForJWT", (user.token = access_token), {
+      .status(200)
+      .cookie("keyCookieJobsRoad", (user.token = access_token), {
         maxAge: 1000 * 60 * 60 * 24 * 30,
         httpOnly: true,
       })
-      .render("profile", user);
+      // .render("profile", user);
+      .send({"message":"Login  Successfully","user":data});
   } catch (error) {
-    errorLogger.fatal("Error to logging session");
+    errorLogger.fatal("Failed to login");
     const message = {
       message: error,
     };
     const URI = {
       URI: "/api/session/login",
     };
-    res.status(500).render("popUp", { message, URI });
+    res.status(500).send({ message, URI });
   }
 };
 
@@ -36,21 +41,21 @@ export const registerUser = async (req, res) => {
     logInfo.info("User Registered");
     const message = {
       message:
-        "Se enviaron las instrucciones al mail para poder activar tu cuenta.De lo contrario no podras iniciar session",
+        "Instructions were sent to your email to activate your account. Otherwise you will not be able to login.",
     };
     const URI = {
-      URI: "/api/session/login",
+      URI: "/api/session/register",
     };
-    res.status(500).render("popUp", { message, URI });
+    res.status(200).send({ message, URI });
   } catch (error) {
     errorLogger.fatal("Error to register user");
     const message = {
       message: error,
     };
     const URI = {
-      URI: "/api/session/login",
+      URI: "/api/session/register",
     };
-    res.status(500).render("popUp", { message, URI });
+    res.status(500).send({ message, URI });
   }
 };
 
@@ -71,15 +76,15 @@ export const getUserCurrent = async (req, res) => {
   }
 };
 
-export const verificarUser = async (req, res) => {
+export const verifyUser = async (req, res) => {
   try {
     const token = req.params.token;
     jwt.verify(token, "secret", async (err, decoded) => {
       if (err) {
-        errorLogger.fatal("Token de verificacion no válido");
-        res.status(500).json({ message: "Token de verificacion no válido" });
+        errorLogger.fatal("Invalid verification token");
+        res.status(500).json({ message: "Invalid verification token" });
       }
-      await sessionRepository.verificarUser(decoded);
+      await sessionRepository.verifyUser(decoded);
       res.render("verificar", {});
     });
   } catch (error) {
@@ -94,7 +99,7 @@ export const verificarUser = async (req, res) => {
   }
 };
 
-export const resetearPassword = async (req, res) => {
+export const resetPassword = async (req, res) => {
   try {
     res.render("resetearPassword", {});
   } catch (error) {
@@ -113,7 +118,7 @@ export const restart = async (req, res) => {
   const email = req.body.email;
   await sessionRepository.validUserSentEmailPassword(email);
   const message = {
-    message: "Email enviado con las instrucciones para cambiar la contraseña",
+    message: "Email sent with instructions to change your password",
   };
   const URI = {
     URI: "/api/session/login",

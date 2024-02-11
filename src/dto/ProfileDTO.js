@@ -1,10 +1,8 @@
-export default class userDTO {
+export default class ProfileDTO {
     constructor(user) {
         this.email = user.email;
-        this.password = user.password;
         this.name = user.name;
         this.surname = user.surname;
-        this.role = user.role;
+        this.role = user.role; 
     }
   }
-  

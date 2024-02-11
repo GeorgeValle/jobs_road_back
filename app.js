@@ -9,6 +9,9 @@ import sessionRouter from "./src/routes/SessionRouter.js"
 
 //import of passport
 import passport from 'passport';
+import initializatePassport from " ./src/config/PassportConfig.js"
+
+// ../config/PassportConfig.js"; 
 
 //import routes
 
@@ -50,11 +53,11 @@ if (modoCluster && cluster.isPrimary) {
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
-
+    app.use(cookieParser("keyCookieJobsRoad"));
     initializatePassport();
     app.use(passport.initialize());
     app.use(passport.session());
-    app.use(cookieParser("keyCookieForJWT"));
+    
 
     //routes
     app.use("/api/session", sessionRouter);

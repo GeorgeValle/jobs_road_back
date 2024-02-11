@@ -12,7 +12,7 @@ import {
   
   
   export const userRepository = new UserRepository(
-    new UserDAO(),
+     UserDAO,
   );
-  export const sessionRepository = new SessionRepository(new UserDAO());
+  export const sessionRepository = new SessionRepository( UserDAO);
  

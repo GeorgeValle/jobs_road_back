@@ -35,4 +35,4 @@ const candidateSchema = new Schema({
     }
 })
 
-export default  model('user', candidateSchema);
+export default  model('candidate', candidateSchema);
