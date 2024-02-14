@@ -1,4 +1,4 @@
-import { sessionRepository } from "../services/index.js";
+import { sessionRepository } from "../services/IndexRepository.js";
 import { generateToken } from "../utils/MethodesJWT.js";
 import jwt from "jsonwebtoken";
 import {logInfo, errorLogger} from '../utils/Logger.js'
