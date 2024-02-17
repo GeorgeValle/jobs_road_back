@@ -43,4 +43,4 @@ const experienceSchema = new Schema({
     
 })
 
-export default  model('user', experienceSchema);
+export default  model('experience', experienceSchema);

@@ -1,5 +1,5 @@
 // This File helpus to homogenize the name of DAOS variables.
-import envs from "../config.js/Envs.js";
+import envs from "../config/Envs.js";
 import mongoose from "mongoose";
 
 let CandidateDAO, EducationDAO, ExperienceDAO, UserDAO;
