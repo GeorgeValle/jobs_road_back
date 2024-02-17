@@ -5,11 +5,15 @@ dotenv.config();
 //Config server Express
 import express from 'express';
 
-import sessionRouter from "./src/routes/SessionRouter.js"
+
 
 //import of passport
 import passport from 'passport';
-import initializatePassport from " ./src/config/PassportConfig.js"
+import cookieParser from "cookie-parser";
+
+import sessionRouter from "./src/routes/SessionRouter.js";
+
+import initializatePassport from "./src/config/PassportConfig.js"
 
 // ../config/PassportConfig.js"; 
 
