@@ -12,5 +12,7 @@ export default {
     USER_MAIL: process.env.USER,
     PASS_MAIL: process.env.PASS,
     EMAIL_ADMIN: process.env.EMAIL_ADMIN,
-    SESSION: process.env.SESSION
+    SESSION: process.env.SESSION,
+    SECRET_MONGO_STORE: process.env.SECRET_MONGO_STORE,
+    TTL: process.env.TTL
 }
