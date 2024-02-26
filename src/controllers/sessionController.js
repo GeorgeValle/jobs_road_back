@@ -50,12 +50,36 @@ export const registerUser = async (req, res) => {
   } catch (error) {
     errorLogger.fatal("Error to register user");
     const message = {
-      message: error,
+      message: "error, not "+error,
     };
     const URI = {
       URI: "/api/session/register",
     };
     res.status(500).send({ message, URI });
+  }
+};
+
+export const reSendToken = async (req, res) => {
+  try {
+    const email = req.params.email;
+    if (!email) {
+      errorLogger.fatal("You Need email");
+      res.status(500).json({ message: "Please, insert mail" });
+    }
+
+    const sent = await sessionRepository.sendToken(email)
+    if(sent){
+    res.status(200).send({ "Message": "Email Sent Succesfully" });
+    }
+  } catch (error) {
+    req.logger.fatal("Error to send your activation link");
+    const message = {
+      message: error,
+    };
+    const URI = {
+      URI: "/api/session/login",
+    };
+    res.status(500).render("popUp", { message, URI });
   }
 };
 
@@ -79,13 +103,15 @@ export const getUserCurrent = async (req, res) => {
 export const verifyUser = async (req, res) => {
   try {
     const token = req.params.token;
+    //Check token expiration date
     jwt.verify(token, "secret", async (err, decoded) => {
       if (err) {
         errorLogger.fatal("Invalid verification token");
         res.status(500).json({ message: "Invalid verification token" });
       }
+      
       await sessionRepository.verifyUser(decoded);
-      res.render("verificar", {});
+      res.status(200).send({ validated: true });
     });
   } catch (error) {
     errorLogger.fatal("Error to verify user");
@@ -93,9 +119,10 @@ export const verifyUser = async (req, res) => {
       message: error,
     };
     const URI = {
-      URI: "/api/session/login",
+      URI: "/api/session/verify/:token",
     };
-    res.status(500).render("popUp", { message, URI });
+    //res.status(500).render("popUp", { message, URI });
+    res.status(500).send({message, URI})
   }
 };
 
@@ -177,5 +204,5 @@ export const getProfile = async (req, res) => {
 export const logoutUser = async (req, res) => {
   const { user } = req.user;
   await sessionRepository.setDateController(user);
-  res.clearCookie("keyCookieForJWT").redirect("/api/session/login");
+  res.clearCookie("keyCookieJobsRoad").redirect("/api/session/login");
 };

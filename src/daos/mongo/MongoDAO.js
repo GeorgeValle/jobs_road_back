@@ -38,16 +38,17 @@ class MongoDAO{
 
     getByFieldDAO = async field =>{
         try{
-            let objDAO = await this.collection.find(field)
+            let objDAO = await this.collection.find(field).exec()
             return objDAO
         }catch(err) {
-
+            console.log(err.message);
         }
     }
 
-    updateByIdDAO = async (obj,id) =>{
+    updateByIdDAO = async ( obj, id) =>{
         try {
             let objDAO = await this.collection.findByIdAndUpdate(id, obj,{new:true});
+            
             return objDAO   
             
         } catch (err) {
@@ -55,6 +56,19 @@ class MongoDAO{
         }  
     }
     
+    updateOneDao = async (obj,condition) => {
+        try{
+             let objDAO = await this.collection.findOneAndUpdate(
+                condition,
+                {$set : obj},
+                {new:true}
+                );
+            return objDAO 
+        }
+        catch(err){
+            console.log(err.message);
+        }
+    }
 
     deleteByIdDAO = async (id)=>{
         try {
@@ -67,7 +81,7 @@ class MongoDAO{
 
 
 
-updateOneFieldById = async (id, fieldUpdate,)=>{
+updateOneFieldById = async (id, fieldUpdate)=>{
     try{
 
         //updates = have field update

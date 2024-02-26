@@ -9,7 +9,8 @@ import {
   restart,
   validPassword,
   getProfile,
-  logoutUser
+  logoutUser,
+  reSendToken
 } from "../controllers/sessionController.js";
 import passport from "passport";
 const router = Router();
@@ -35,6 +36,8 @@ router.get(
 );
 
 router.get("/verify/:token", verifyUser);
+
+router.get("/reverify/:email", reSendToken);
 
 router.get(
   "/current",
