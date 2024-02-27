@@ -2,6 +2,8 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
+import Envs from "./src/config/Envs.js"
+
 //Config server Express
 import express from 'express';
 
@@ -10,7 +12,8 @@ import express from 'express';
 //import of passport
 import passport from 'passport';
 import cookieParser from "cookie-parser";
-
+import session from "express-session";
+import MongoStore from "connect-mongo";
 import sessionRouter from "./src/routes/SessionRouter.js";
 
 import initializatePassport from "./src/config/PassportConfig.js"
@@ -56,6 +59,21 @@ if (modoCluster && cluster.isPrimary) {
     //middleware of json
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
+
+    //Mongo-conect configuration
+    app.use(
+        session({
+          store: MongoStore.create({
+            mongoUrl: Envs.MONGO_URI,
+            dbName: Envs.MONGO_DATABASE,
+            ttl: Envs.TTL,
+          }),
+          secret: Envs.SECRET_MONGO_STORE,
+          resave: true,
+          saveUninitialized: true,
+        })
+      );
+
 
     app.use(cookieParser("keyCookieJobsRoad"));
     initializatePassport();

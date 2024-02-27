@@ -1,7 +1,7 @@
 import { createHash, isValidPassword } from "../utils/MethodesJWT.js";
 import UserDTO from "../dto/UserDTO.js";
-//errors
 import CustomError from "../utils/CustomError.js"
+import {logInfo} from '../utils/Logger.js'
 import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
 import config from "../config/Envs.js";
@@ -55,8 +55,8 @@ export default class SessionRepository {
   }
 
   async registerUser(user) {
-    if (await this.userDAO.getByFieldDAO(user.email))
-      throw new Error("User already exist");
+     if (await this.userDAO.getByFieldDAO({email:user.email})==true)
+       throw new Error("User already exist");
     const token = jwt.sign({ email: user.email }, "secret", {
       expiresIn: "72h",
     });
@@ -89,13 +89,53 @@ export default class SessionRepository {
   }
 
   async verifyUser(decoded) {
-    const user = await this.userDAO.getByFieldDAO(decoded.email);
-    user.status = "verified";
-    await this.userDAO.updateUser(user._id, user);
+
+    const user = await this.userDAO.getByFieldDAO({email:decoded.email});
+    if (!user) {
+      CustomError.createError({
+        name: "Error",
+        message: "User not found when verify email",
+        code: EErrors.USER_NOT_FOUND,
+        info: generateUserErrorInfo(user),
+      });
+    }
+
+    //Change user status X "verified"
+    const userVerified = await this.userDAO.updateOneDao({status:"verified"},{email:decoded.email});
+    if (userVerified==0) {
+      CustomError.createError({
+        name: "Error",
+        message: "User not verified",
+        code: EErrors.USER_NOT_FOUND,
+        info: generateUserErrorInfo(userVerified),
+      });
+    }
+    logInfo.info(`user verify: ${decoded.email}`);
+ 
   }
 
-  async resetPasswordForm(email, password, confirmPassword) {
-    const user = await this.userDAO.getByFieldDAO(email);
+  async sendToken(OneEmail) {
+    const user = await this.userDAO.getByFieldDAO({email:OneEmail});
+    if (user.status==="verified")
+      throw new Error("User already verified");
+    const token = jwt.sign({ email: OneEmail }, "secret", {
+      expiresIn: "72h",
+    });
+    const verificationLink = `${config.SESSION}/verify/${token}`;
+    const mailOptions = {
+      from: config.USER_MAIL,
+      to: OneEmail,
+      subject: "Verify your email",
+      html: `Click on the following link to verify your email: ${verificationLink}`,
+    };
+    transporter.sendMail(mailOptions, (err, info) => {
+      if (err) throw new Error(err);
+    });
+    return true;
+  }
+
+  async resetPasswordForm(oneEmail, password, confirmPassword) {
+    const user = await this.userDAO.getByFieldDAO({email:oneEmail});
     if (!user) {
       CustomError.createError({
         name: "Error",
@@ -126,8 +166,8 @@ export default class SessionRepository {
     return user;
   }
 
-  async validUserSentEmailPassword(email) {
-    const user = await this.userDAO.getByFieldDAO(email);
+  async validUserSentEmailPassword(oneEmail) {
+    const user = await this.userDAO.getByFieldDAO({email:oneEmail});
     if (user) {
       const token = jwt.sign({ email }, "secret", { expiresIn: "1h" });
       const mailOptions = {
@@ -143,9 +183,9 @@ export default class SessionRepository {
     return user;
   }
 
-  async getUserByEmail(email) {
+  async getUserByEmail(oneEmail) {
     try {
-      const user = await this.userDAO.getByFieldDAO(email);
+      const user = await this.userDAO.getByFieldDAO({email:oneEmail});
       if (!user) {
         CustomError.createError({
           name: "Error",

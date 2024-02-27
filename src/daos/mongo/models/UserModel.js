@@ -15,17 +15,10 @@ const userSchema = new Schema({
     },
     password: { 
             type: String,
-            // match: [/^[a-zA-Z0-9]+$/, 'is invalid'],
             trim: true,
             select: false,
-            minlength: 7,
-            maxlength: 15,
             required: [true, "can't be blank"],
-            validate: {
-                validator: function(value) {
-                  return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{7,15}$/.test(value);
-                },
-                message: 'Invalid password format',}
+            
         },
 
     name:{
