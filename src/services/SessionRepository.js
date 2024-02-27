@@ -55,8 +55,8 @@ export default class SessionRepository {
   }
 
   async registerUser(user) {
-    // if (await this.userDAO.getByFieldDAO({email:user.email}))
-    //   throw new Error("User already exist");
+     if (await this.userDAO.getByFieldDAO({email:user.email})==true)
+       throw new Error("User already exist");
     const token = jwt.sign({ email: user.email }, "secret", {
       expiresIn: "72h",
     });
@@ -91,7 +91,6 @@ export default class SessionRepository {
   async verifyUser(decoded) {
 
     const user = await this.userDAO.getByFieldDAO({email:decoded.email});
-    logInfo.info(`user verify: ${user}`);
     if (!user) {
       CustomError.createError({
         name: "Error",
@@ -101,17 +100,17 @@ export default class SessionRepository {
       });
     }
 
-    
     //Change user status X "verified"
-    const UserVerified = await this.userDAO.updateOneDao({status:"verified"},{email:decoded.email});
-    if (!UserVerified) {
+    const userVerified = await this.userDAO.updateOneDao({status:"verified"},{email:decoded.email});
+    if (userVerified==0) {
       CustomError.createError({
         name: "Error",
         message: "User not verified",
         code: EErrors.USER_NOT_FOUND,
-        info: generateUserErrorInfo(UserVerified),
+        info: generateUserErrorInfo(userVerified),
       });
     }
+    logInfo.info(`user verify: ${decoded.email}`);
  
   }
 

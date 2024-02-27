@@ -63,7 +63,7 @@ class MongoDAO{
                 {$set : obj},
                 {new:true}
                 );
-            return objDAO 
+            return objDAO.nModified 
         }
         catch(err){
             console.log(err.message);
