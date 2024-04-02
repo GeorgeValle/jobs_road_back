@@ -38,8 +38,21 @@ class MongoDAO{
 
     getByFieldDAO = async field =>{
         try{
+            
             let objDAO = await this.collection.find(field).exec()
             return objDAO
+        }catch(err) {
+            console.log(err.message);
+        }
+    }
+
+    getOneByFieldDAO = async field =>{
+        try{
+            
+            let objDAO = await this.collection.findOne(field).exec();
+            console.log(objDAO)
+            return objDAO
+            
         }catch(err) {
             console.log(err.message);
         }
