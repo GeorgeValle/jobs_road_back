@@ -64,6 +64,21 @@ export default class SessionRepository {
       //   });
       // }
       // console.log(notUpdate)
+
+      //Change date on lastLogin  
+      const date = new Date().toLocaleDateString()
+    const lastLoginUpdated = await this.userDAO.updateOneDao({lastLogin:date},{email:userDB.email});
+    if (lastLoginUpdated==0) {
+      CustomError.createError({
+        name: "Error",
+        message: "Last Login not updated",
+        code: EErrors.LAST_LOGIN_NOT_UPDATED,
+        info: generateUserErrorInfo(lastLoginUpdated),
+      });
+    }
+    logInfo.info(`lastLogin updated: ${userDB.email}`);
+
+
       return userDB;
       
     } catch (e) {
