@@ -20,7 +20,9 @@ router.post("/login", loginUser);
 router.post("/register", registerUser);
 
 router.get("/login", (req, res) => {
-  if (Object.keys(req.cookies).length != 0) return res.redirect("/profile");
+  // if (Object.keys(req.cookies).length != 0) return res.redirect("/profile");
+  // res.render("login", {});
+  if (Object.keys(req.cookies).length != 0) return res.status(200).json({"message":"Login Successfully","user":user,"newAccess":true});;
   res.render("login", {});
 });
 

@@ -16,7 +16,7 @@ const userSchema = new Schema({
     password: { 
             type: String,
             trim: true,
-            select: false,
+            select: true,
             required: [true, "can't be blank"],
             
         },
@@ -31,7 +31,8 @@ const userSchema = new Schema({
         required: true
         },
     lastLogin:{
-        type:Date
+        type:Date,
+        default:new Date().toLocaleString()
     },
     inactive:{
         type: Boolean,

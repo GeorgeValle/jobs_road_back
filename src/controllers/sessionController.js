@@ -2,19 +2,20 @@ import { sessionRepository } from "../services/IndexRepository.js";
 import { generateToken } from "../utils/MethodesJWT.js";
 import jwt from "jsonwebtoken";
 import {logInfo, errorLogger} from '../utils/Logger.js'
-import ProfileDTO from "../dto/ProfileDTO.js";
+//import ProfileDTO from "../dto/ProfileDTO.js";
 
 
 export const loginUser = async (req, res) => {
   try {
     const user = await sessionRepository.loginUser(req.body);
-    if (user == null) {
-      errorLogger.error("Failed to login");
-      return res.redirect("/login");
-    }
+    // if (user == null) {
+    //   errorLogger.error("Failed to login");
+    //   return res.status(400).json({"newAccess":false});
+    // }
+    logInfo.info(`${user.email} Find!!!!!!`)
     const access_token = generateToken(user);
     logInfo.info(`${user.username} logged in`);
-    const data = new ProfileDTO(user);
+    //const data = new ProfileDTO(user);
     res
       .status(200)
       .cookie("keyCookieJobsRoad", (user.token = access_token), {
@@ -22,7 +23,7 @@ export const loginUser = async (req, res) => {
         httpOnly: true,
       })
       // .render("profile", user);
-      .send({"message":"Login  Successfully","user":data});
+      .json({"message":"Login Successfully","user":user,"newAccess":true});
   } catch (error) {
     errorLogger.fatal("Failed to login");
     const message = {
@@ -31,7 +32,7 @@ export const loginUser = async (req, res) => {
     const URI = {
       URI: "/api/session/login",
     };
-    res.status(500).send({ message, URI });
+    res.status(500).json({ message, URI });
   }
 };
 

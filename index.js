@@ -7,7 +7,8 @@ import Envs from "./src/config/Envs.js"
 //Config server Express
 import express from 'express';
 
-
+//import handlebars
+import handlebars from "express-handlebars";
 
 //import of passport
 import passport from 'passport';
@@ -74,6 +75,17 @@ if (modoCluster && cluster.isPrimary) {
         })
       );
 
+    app.use('/content', express.static('./src/public'))
+
+    // Set the handlebars template for default engine
+    //app.set('view engine', 'handlebars');
+    //Set the handlebars template for default engine
+    //views client side
+    app.engine('handlebars', handlebars.engine())
+    // app.set('views', './src/views')
+    app.set('views', './src/views') 
+    app.set('view engine', 'handlebars')
+
 
     app.use(cookieParser("keyCookieJobsRoad"));
     initializatePassport();
@@ -88,7 +100,7 @@ if (modoCluster && cluster.isPrimary) {
 
     //message for inexistent routes
     app.use((req, res) => {
-        res.status(404).send({error: -2, description: `route ${req.baseUrl}${req.url} method ${req.method} not implemented`});
+        res.status(404).json({error: -2, description: `route ${req.baseUrl}${req.url} method ${req.method} not implemented`});
     });
 
     app.use((error, req , res, next)=>{

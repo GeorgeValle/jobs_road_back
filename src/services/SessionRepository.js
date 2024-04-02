@@ -1,5 +1,6 @@
 import { createHash, isValidPassword } from "../utils/MethodesJWT.js";
 import UserDTO from "../dto/UserDTO.js";
+import ProfileDTO from "../dto/ProfileDTO.js";
 import CustomError from "../utils/CustomError.js"
 import {logInfo} from '../utils/Logger.js'
 import nodemailer from "nodemailer";
@@ -21,7 +22,9 @@ export default class SessionRepository {
 
   async loginUser(user) {
     try {
-      const userDB = await this.userDAO.getByFieldDAO(user.email);
+      
+      const userDB = await this.userDAO.getOneByFieldDAO({email:user.email});
+      logInfo.info(`user login getting: ${userDB.email}, password :${userDB.password}`);
       if (!userDB) {
         CustomError.createError({
           name: "Error",
@@ -42,15 +45,29 @@ export default class SessionRepository {
           name: "Error",
           message: "Password not valid",
           code: EErrors.PASSWORD_NOT_VALID,
-          info: generateUserErrorInfo(user),
+          info: generateUserErrorInfo(user.email),
         });
       }
-      const date = new Date();
-      userDB.lastLogin = date;
-      await this.userDAO.updateByIdDAO(userDB, userDB._id);
+      
+      //const date = new Date().toLocaleString();
+      
+      //userDB.lastLogin = date;
+      //await this.userDAO.updateByIdDAO(userDB, userDB._id);
+      
+      // const notUpdate = await this.userDAO.updateOneDao({lastLogin:date},{email:decoded.email});
+      // if(!notUpdate){
+      //   CustomError.createError({
+      //     name: "Error",
+      //     message: "Last Login not updated",
+      //     code: EErrors.LAST_LOGIN_NOT_UPDATED,
+      //     info: generateUserErrorInfo(user.email),
+      //   });
+      // }
+      // console.log(notUpdate)
       return userDB;
+      
     } catch (e) {
-      throw e;
+      // throw new Error(e);
     }
   }
 
